@@ -19,6 +19,9 @@ return {
                         dismiss = false,
                     },
                 },
+                filetypes = {
+                    ["*"] = true,
+                },
             })
         end,
     },
