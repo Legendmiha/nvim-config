@@ -62,6 +62,7 @@ return {
             -- NOTE: Highlight groups are extended (merged) by default. Disable this
             -- per group via `inherit = false`
             highlight_groups = {
+                FloatBorder = { fg = "muted", bg = "none" }, -- soft pink border (love color)
                 -- Comment = { fg = "foam" },
                 -- StatusLine = { fg = "love", bg = "love", blend = 15 },
                 -- VertSplit = { fg = "muted", bg = "muted" },
@@ -82,5 +83,19 @@ return {
         })
 
         vim.cmd("colorscheme rose-pine-moon")
+        -- Customize hover and signature help popups
+        local border = "rounded" -- can also be "single", "double", "solid", etc.
+        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
+            vim.lsp.handlers.hover,
+            {
+                border = border,
+            }
+        )
+        vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
+            vim.lsp.handlers.signature_help,
+            {
+                border = border,
+            }
+        )
     end
 }

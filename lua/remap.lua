@@ -53,10 +53,3 @@ vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 
 vim.keymap.set("n", "<leader><leader>", function() vim.cmd("so") end)
-
-vim.keymap.set(
-    "n",
-    "<leader>e",
-    function() vim.diagnostic.open_float({ focusable = true }) end,
-    { desc = "Expand an Error into a float" }
-)
