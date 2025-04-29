@@ -26,7 +26,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- Open a menu for available code actions (like quickfixes, refactors).
         vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
         -- List all references to the symbol under cursor (who uses this function/variable).
-        vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
+        vim.keymap.set("n", "<leader>vrr", function() require('telescope.builtin').lsp_references() end, { noremap = true, silent = true })
         -- Rename symbol (variable, function, etc.) everywhere it's used.
         vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
         -- Show function signature (parameters info) when you’re typing inside a function call.
