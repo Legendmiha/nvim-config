@@ -52,6 +52,20 @@ return {
                 row = 0,
                 col = 1
             },
+            on_attach = function(bufnr)
+                local gitsigns = require('gitsigns')
+
+                local function map(mode, l, r, opts)
+                    opts = opts or {}
+                    opts.buffer = bufnr
+                    vim.keymap.set(mode, l, r, opts)
+                end
+
+                map('n', '<leader>sp', gitsigns.preview_hunk)
+                map('n', '<leader>si', gitsigns.preview_hunk_inline)
+                map('n', '<leader>sr', gitsigns.reset_hunk)
+                map('n', '<leader>sb', gitsigns.blame)
+            end
         })
     end,
 }
