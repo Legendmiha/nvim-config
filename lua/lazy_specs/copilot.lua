@@ -22,8 +22,6 @@ return {
                 filetypes = {
                     ["*"] = true,
                 },
-                -- only needed if using nodejs version < 20
-                copilot_node_command = '/home/legendmiha/.nvm/versions/node/v22.14.0/bin/node'
             })
         end,
     },
