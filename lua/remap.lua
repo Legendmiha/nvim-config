@@ -51,5 +51,9 @@ vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 
 -- Start a find and replace across the whole file for the exact word under your cursor
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+-- Start a find and replace across the whole project for the exact word under your cursor
+-- search with Telescope, press Ctrl+q to add the results to the quickfix list
+-- then in the quickfix list press <leader>S to replace all occurrences
+vim.keymap.set("n", "<leader>S", [[:cdo s\/<<C-r><C-w>\>/<C-r><C-w>/g<Left><Left><Left>]])
 
 vim.keymap.set("n", "<leader><leader>", function() vim.cmd("so") end)
