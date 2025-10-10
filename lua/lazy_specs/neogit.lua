@@ -14,7 +14,11 @@ return {
                 end,
             },
             keymaps = {
+                view = {
+                    { "n", "q", "<cmd>DiffviewClose<CR>", { desc = "Close Diffview" } },
+                },
                 file_panel = {
+                    { "n", "q", "<cmd>DiffviewClose<CR>", { desc = "Close Diffview" } },
                     { "n", "<C-u>", actions.scroll_view(-0.25), { desc = "Scroll up" } },
                     { "n", "<C-d>", actions.scroll_view(0.25), { desc = "Scroll down" } },
                 }
@@ -25,16 +29,7 @@ return {
         neogit.setup {}
 
         vim.keymap.set("n", "<leader>ng", "<cmd>Neogit<CR>")
-        vim.keymap.set("n", "<leader>dv", function()
-            local view = require("diffview.lib").get_current_view()
-            if view then
-                -- If Diffview is open, close it
-                vim.cmd("DiffviewClose")
-            else
-                -- If Diffview is not open, open it
-                vim.cmd("DiffviewOpen")
-            end
-        end, { desc = "Toggle Diffview" })
+        vim.keymap.set("n", "<leader>dv", "<cmd>DiffviewOpen<CR>")
         vim.opt.fillchars:append { diff = "╱" }
     end
 }

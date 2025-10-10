@@ -29,6 +29,10 @@ vim.opt.updatetime = 50
 
 vim.opt.colorcolumn = "80"
 
+-- vim.opt.spell = true
+-- vim.opt.spelllang = { "en", "uk" }
+-- vim.opt.spelloptions = "camel"
+
 vim.api.nvim_create_autocmd('CursorMoved', {
   group = vim.api.nvim_create_augroup('auto-hlsearch', { clear = true }),
   callback = function ()
