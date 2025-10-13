@@ -1,3 +1,4 @@
+# sudo apt-get install ripgrep
 return {
     "nvim-telescope/telescope.nvim",
 
