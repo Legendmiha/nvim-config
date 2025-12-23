@@ -11,6 +11,7 @@ return {
         "L3MON4D3/LuaSnip",
         "saadparwaiz1/cmp_luasnip",
         "j-hui/fidget.nvim",
+        { "qvalentin/helm-ls.nvim", ft = "helm" }
     },
 
     config = function()
@@ -29,6 +30,7 @@ return {
                 "lua_ls",
                 "ts_ls",
                 "pylsp",
+                "helm_ls",
             },
             handlers = {
                 function(server_name) -- default handler (optional)
@@ -45,6 +47,18 @@ return {
                                 runtime = { version = "Lua 5.1" },
                                 diagnostics = {
                                     globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
+                                }
+                            }
+                        }
+                    }
+                end,
+                ["helm_ls"] = function()
+                    local lspconfig = require('lspconfig')
+                    lspconfig.helm_ls.setup {
+                        settings = {
+                            ['helm-ls'] = {
+                                yamlls = {
+                                    path = "yaml-language-server",
                                 }
                             }
                         }
