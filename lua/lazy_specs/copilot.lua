@@ -23,7 +23,7 @@ return {
                     ["*"] = true,
                 },
                 -- only needed if using nodejs version < 20
-                copilot_node_command = '/home/mbortnyk/.nvm/versions/node/v22.14.0/bin/node'
+                copilot_node_command = '/home/legendmiha/.local/share/mise/installs/node/25.2.1/bin/node'
             })
         end,
     },
