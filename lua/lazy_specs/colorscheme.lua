@@ -84,18 +84,12 @@ return {
 
         vim.cmd("colorscheme rose-pine-moon")
         -- Customize hover and signature help popups
-        local border = "rounded" -- can also be "single", "double", "solid", etc.
-        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
-            vim.lsp.handlers.hover,
-            {
-                border = border,
-            }
-        )
-        vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
-            vim.lsp.handlers.signature_help,
-            {
-                border = border,
-            }
-        )
+        local border = "rounded"
+        vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
+            return vim.lsp.handlers.hover(err, result, ctx, vim.tbl_extend("force", config or {}, { border = border }))
+        end
+        vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
+            return vim.lsp.handlers.signature_help(err, result, ctx, vim.tbl_extend("force", config or {}, { border = border }))
+        end
     end
 }

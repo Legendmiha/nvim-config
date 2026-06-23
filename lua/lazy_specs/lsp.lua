@@ -58,7 +58,7 @@ return {
                         settings = {
                             ['helm-ls'] = {
                                 yamlls = {
-                                    path = "yaml-language-server",
+                                    path = "yaml-language-server"
                                 }
                             }
                         }

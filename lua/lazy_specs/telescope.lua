@@ -2,14 +2,20 @@
 return {
     "nvim-telescope/telescope.nvim",
 
-    tag = "0.1.5",
-
     dependencies = {
         "nvim-lua/plenary.nvim",
-        "nvim-tree/nvim-web-devicons"
+        "nvim-tree/nvim-web-devicons",
+        { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
     },
 
     config = function()
+        -- Compatibility shim for Neovim 0.10+ (ft_to_lang was removed)
+        if not vim.treesitter.ft_to_lang then
+            vim.treesitter.ft_to_lang = function(ft)
+                return vim.treesitter.language.get_lang(ft) or ft
+            end
+        end
+
         require('telescope').setup({})
 
         local builtin = require('telescope.builtin')
