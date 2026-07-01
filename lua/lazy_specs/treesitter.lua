@@ -39,6 +39,7 @@ return {
               local lang = vim.treesitter.language.get_lang(ev.match)
               if lang and pcall(vim.treesitter.language.inspect, lang) then
                   vim.treesitter.start(ev.buf, lang)
+                  vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
               end
           end
       })
