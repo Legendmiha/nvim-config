@@ -3,12 +3,11 @@ return {
   lazy = false,
   build = ':TSUpdate',
   config = function()
-      local ensure_installed = {
+      require("nvim-treesitter").install {
           "vimdoc", "javascript", "typescript", "lua",
           "jsdoc", "bash", "python", "tsx", "json",
       }
       require("nvim-treesitter").setup {
-          ensure_installed = ensure_installed,
           sync_install = false,
           auto_install = true,
           indent = {
