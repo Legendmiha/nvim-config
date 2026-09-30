@@ -1,89 +1,127 @@
-return {
-    "rose-pine/neovim",
-    name = "rose-pine",
+-- Follow the Omarchy theme: read the active theme's neovim.lua (a LazyVim-style
+-- spec) and re-apply it whenever `omarchy theme set` swaps the theme.
+
+local state_dir = vim.fn.expand("~/.local/state/omarchy/current")
+local theme_file = state_dir .. "/theme/neovim.lua"
+local transparent = true
+
+-- Colorscheme plugins used by stock Omarchy themes, installed up front so
+-- switching themes never needs a download. Lazy.nvim loads them on :colorscheme.
+local plugins = {
+    { "bjarneo/aether.nvim", branch = "v3", name = "aether" },
+    { "bjarneo/hackerman.nvim", dependencies = { "aether" } },
+    { "catppuccin/nvim", name = "catppuccin" },
+    { "EdenEast/nightfox.nvim" },
+    { "ellisonleao/gruvbox.nvim" },
+    { "ficcdaf/ashen.nvim" },
+    { "folke/tokyonight.nvim" },
+    { "kepano/flexoki-neovim" },
+    { "neanias/everforest-nvim" },
+    { "OldJobobo/retro-82.nvim" },
+    { "omacom-io/lumon.nvim" },
+    { "rebelot/kanagawa.nvim" },
+    { "ribru17/bamboo.nvim" },
+    { "rose-pine/neovim", name = "rose-pine" },
+    { "tahayvr/matteblack.nvim" },
+}
+
+-- Returns the theme's plugin specs and the colorscheme name it asks for.
+local function read_theme()
+    local ok, spec = pcall(dofile, theme_file)
+    if not ok or type(spec) ~= "table" then
+        return {}, nil
+    end
+    local specs, colorscheme = {}, nil
+    for _, s in ipairs(spec) do
+        if type(s) == "table" then
+            if s[1] == "LazyVim/LazyVim" then
+                colorscheme = s.opts and s.opts.colorscheme
+            else
+                table.insert(specs, s)
+            end
+        end
+    end
+    return specs, colorscheme
+end
+
+local function plugin_name(s)
+    return s.name or s[1]:match("[^/]+$")
+end
+
+local function module_name(s)
+    return s.main or plugin_name(s):gsub("%.nvim$", ""):gsub("[-.]?nvim$", ""):gsub("^nvim[-.]", "")
+end
+
+local function customize()
+    if transparent then
+        for _, group in ipairs({ "Normal", "NormalNC", "NormalFloat", "SignColumn", "EndOfBuffer" }) do
+            vim.api.nvim_set_hl(0, group, vim.tbl_extend("force", vim.api.nvim_get_hl(0, { name = group }), { bg = "none" }))
+        end
+    end
+    vim.api.nvim_set_hl(0, "FloatBorder", { fg = vim.api.nvim_get_hl(0, { name = "Comment", link = false }).fg, bg = "none" })
+end
+
+local function apply(reload)
+    local specs, colorscheme = read_theme()
+    if not colorscheme then
+        return
+    end
+    if reload then
+        -- Theme opts (e.g. aether's generated palette) change per theme, so re-run setup.
+        for _, s in ipairs(specs) do
+            if s.opts then
+                pcall(require("lazy").load, { plugins = { plugin_name(s) } })
+                local ok, mod = pcall(require, module_name(s))
+                if ok and type(mod) == "table" and mod.setup then
+                    pcall(mod.setup, s.opts)
+                end
+            end
+        end
+    end
+    vim.cmd("hi clear")
+    local ok, err = pcall(vim.cmd.colorscheme, colorscheme)
+    if not ok then
+        vim.notify("Omarchy theme: " .. err, vim.log.levels.WARN)
+        return
+    end
+    customize()
+end
+
+local function watch()
+    local handle = vim.uv.new_fs_event()
+    local pending = false
+    handle:start(state_dir, {}, function(_, filename)
+        if filename ~= "theme.name" or pending then
+            return
+        end
+        pending = true
+        vim.defer_fn(function()
+            pending = false
+            apply(true)
+            vim.cmd("redraw!")
+        end, 200)
+    end)
+end
+
+-- Include the active theme's own specs (covers custom themes and aether's opts).
+local theme_specs = read_theme()
+for _, s in ipairs(theme_specs) do
+    table.insert(plugins, s)
+end
+for _, s in ipairs(plugins) do
+    s.lazy = true
+end
+
+table.insert(plugins, {
+    "omarchy-theme",
+    virtual = true,
+    lazy = false,
+    priority = 1000,
     config = function()
-        require("rose-pine").setup({
-            variant = "moon", -- auto, main, moon, or dawn
-            dark_variant = "moon", -- main, moon, or dawn
-            dim_inactive_windows = false,
-            extend_background_behind_borders = true,
+        apply(false)
+        watch()
 
-            enable = {
-                terminal = true,
-                legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
-                migrations = true, -- Handle deprecated options automatically
-            },
-
-            styles = {
-                bold = true,
-                italic = false,
-                transparency = true,
-            },
-
-            groups = {
-                border = "muted",
-                link = "iris",
-                panel = "surface",
-
-                error = "love",
-                hint = "iris",
-                info = "foam",
-                note = "pine",
-                todo = "rose",
-                warn = "gold",
-
-                git_add = "foam",
-                git_change = "rose",
-                git_delete = "love",
-                git_dirty = "rose",
-                git_ignore = "muted",
-                git_merge = "iris",
-                git_rename = "pine",
-                git_stage = "iris",
-                git_text = "rose",
-                git_untracked = "subtle",
-
-                h1 = "iris",
-                h2 = "foam",
-                h3 = "rose",
-                h4 = "gold",
-                h5 = "pine",
-                h6 = "foam",
-            },
-
-            palette = {
-                -- Override the builtin palette per variant
-                -- moon = {
-                --     base = '#18191a',
-                --     overlay = '#363738',
-                -- },
-            },
-
-            -- NOTE: Highlight groups are extended (merged) by default. Disable this
-            -- per group via `inherit = false`
-            highlight_groups = {
-                FloatBorder = { fg = "muted", bg = "none" }, -- soft pink border (love color)
-                -- Comment = { fg = "foam" },
-                -- StatusLine = { fg = "love", bg = "love", blend = 15 },
-                -- VertSplit = { fg = "muted", bg = "muted" },
-                -- Visual = { fg = "base", bg = "text", inherit = false },
-            },
-
-            before_highlight = function(group, highlight, palette)
-                -- Disable all undercurls
-                -- if highlight.undercurl then
-                --     highlight.undercurl = false
-                -- end
-                --
-                -- Change palette colour
-                -- if highlight.fg == palette.pine then
-                --     highlight.fg = palette.foam
-                -- end
-            end,
-        })
-
-        vim.cmd("colorscheme rose-pine-moon")
-        -- Customize hover and signature help popups
+        -- Rounded borders on hover and signature help popups
         local border = "rounded"
         vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
             return vim.lsp.handlers.hover(err, result, ctx, vim.tbl_extend("force", config or {}, { border = border }))
@@ -91,5 +129,7 @@ return {
         vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
             return vim.lsp.handlers.signature_help(err, result, ctx, vim.tbl_extend("force", config or {}, { border = border }))
         end
-    end
-}
+    end,
+})
+
+return plugins
